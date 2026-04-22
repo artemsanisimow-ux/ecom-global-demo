@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcomIQ — Global Marketplace Intelligence · Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --paper: #f5f3ee;
+    --accent: #ff4d1c;
+    --accent2: #0055ff;
+    --muted: #9a9690;
+    --border: rgba(10,10,15,0.12);
+    --surface: rgba(255,255,255,0.7);
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.4;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: rgba(245,243,238,0.94);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo { font-size: 1rem; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .logo span { background: var(--ink); color: var(--paper); padding: 2px 8px; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; }
+  .logo em { background: var(--accent); color: white; padding: 2px 8px; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em; font-style: normal; }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+
+  .demo-counter {
+    font-size: 0.7rem; font-family: var(--mono);
+    color: var(--muted); display: flex; align-items: center; gap: 6px;
+  }
+
+  .counter-dots { display: flex; gap: 3px; }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border); transition: background 0.3s;
+  }
+  .dot.used { background: var(--accent); }
+  .dot.remaining { background: #22c55e; }
+
+  .btn-cta {
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 700;
+    padding: 8px 18px; background: var(--ink); color: var(--paper);
+    border: none; cursor: pointer; letter-spacing: 0.02em;
+    transition: all 0.15s;
+  }
+  .btn-cta:hover { background: var(--accent); }
+
+  /* ── HERO BANNER ── */
+  .hero-banner {
+    background: var(--ink); color: var(--paper);
+    padding: 28px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .hero-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; }
+  .hero-title span { color: var(--accent); }
+
+  .hero-desc {
+    font-size: 0.82rem; font-family: var(--mono);
+    color: rgba(245,243,238,0.6); margin-top: 8px; line-height: 1.6;
+  }
+
+  .hero-platforms { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .platform-badge {
+    font-size: 0.65rem; font-family: var(--mono);
+    padding: 4px 10px; border: 1px solid rgba(245,243,238,0.2);
+    color: rgba(245,243,238,0.7);
+  }
+
+  .hero-stats {
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 16px 24px;
+    border: 1px solid rgba(245,243,238,0.15);
+    min-width: 180px;
+  }
+
+  .hero-stat { display: flex; flex-direction: column; gap: 2px; }
+  .hero-stat-value { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; color: var(--accent); }
+  .hero-stat-label { font-size: 0.65rem; font-family: var(--mono); color: rgba(245,243,238,0.5); }
+
+  /* ── LAYOUT ── */
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 180px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar { border-right: 1px solid var(--border); padding: 20px 0; }
+
+  .nav-section { margin-bottom: 6px; }
+  .nav-label {
+    font-size: 0.6rem; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    padding: 0 18px; margin-bottom: 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 18px; cursor: pointer;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--muted); border-left: 2px solid transparent;
+    transition: all 0.15s; user-select: none;
+  }
+  .nav-item:hover { color: var(--ink); background: rgba(10,10,15,0.04); }
+  .nav-item.active { color: var(--ink); border-left-color: var(--accent); background: rgba(255,77,28,0.05); }
+
+  .platform-pills { display: flex; flex-wrap: wrap; gap: 5px; padding: 6px 18px 14px; }
+  .platform-pill {
+    font-size: 0.62rem; font-family: var(--mono);
+    padding: 3px 7px; border: 1px solid var(--border);
+    cursor: pointer; color: var(--muted); transition: all 0.15s; background: transparent;
+  }
+  .platform-pill:hover, .platform-pill.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  .sidebar-footer {
+    padding: 16px 18px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+  .sidebar-note {
+    font-size: 0.68rem; font-family: var(--mono);
+    color: var(--muted); line-height: 1.5;
+  }
+
+  /* ── MAIN ── */
+  .main-panel { padding: 28px 36px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .panel-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+  .panel-title { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.04em; }
+  .panel-desc { font-size: 0.75rem; font-family: var(--mono); color: var(--muted); }
+
+  /* ── FORM ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label { font-size: 0.65rem; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  input, textarea, select {
+    font-family: var(--mono); font-size: 0.8rem;
+    padding: 9px 11px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--ink);
+    outline: none; transition: border-color 0.15s; width: 100%;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--ink); }
+  textarea { min-height: 110px; resize: vertical; }
+
+  .btn {
+    font-family: var(--sans); font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.04em; padding: 10px 22px; border: none;
+    cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { background: #222; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ── RESULTS ── */
+  .result-container {
+    margin-top: 24px; border: 1px solid var(--border);
+    overflow: hidden; animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px; background: var(--ink); color: var(--paper);
+  }
+  .result-agent { font-size: 0.65rem; font-family: var(--mono); letter-spacing: 0.1em; opacity: 0.6; }
+  .result-meta { font-size: 0.65rem; font-family: var(--mono); opacity: 0.5; }
+
+  .result-body { padding: 20px; display: grid; gap: 18px; }
+  .result-section h4 {
+    font-size: 0.65rem; font-family: var(--mono); color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;
+  }
+
+  /* Watermark */
+  .watermark-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 18px;
+    background: rgba(255,77,28,0.06);
+    border-top: 1px solid rgba(255,77,28,0.15);
+    font-size: 0.62rem; font-family: var(--mono); color: var(--accent);
+  }
+
+  /* Sentiment */
+  .sentiment-display { display: flex; align-items: center; gap: 14px; }
+  .sentiment-score { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.05em; line-height: 1; }
+  .sentiment-label { font-size: 0.72rem; font-family: var(--mono); font-style: italic; color: var(--muted); }
+
+  /* Signals */
+  .signal-list { display: flex; flex-direction: column; gap: 7px; }
+  .signal-card {
+    border: 1px solid var(--border); padding: 11px 13px;
+    display: flex; align-items: flex-start; gap: 10px; background: var(--surface);
+  }
+  .signal-priority {
+    font-size: 0.58rem; font-family: var(--mono); font-weight: 600;
+    padding: 2px 5px; flex-shrink: 0; margin-top: 2px;
+  }
+  .p0 { background: var(--accent); color: white; }
+  .p1 { background: var(--ink); color: var(--paper); }
+  .p2 { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+
+  .signal-text { font-size: 0.78rem; line-height: 1.5; }
+  .signal-action { font-size: 0.7rem; font-family: var(--mono); color: var(--muted); margin-top: 3px; font-style: italic; }
+  .confidence-bar { height: 2px; background: var(--border); margin-top: 5px; }
+  .confidence-fill { height: 100%; background: var(--accent2); }
+
+  /* Segments */
+  .segment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .segment-card {
+    border: 1px solid var(--border); padding: 13px;
+    background: var(--surface); position: relative; overflow: hidden;
+  }
+  .segment-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent2); }
+  .segment-score { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: var(--accent2); }
+  .segment-name { font-size: 0.8rem; font-weight: 700; margin: 5px 0 3px; }
+  .segment-need { font-size: 0.7rem; font-family: var(--mono); color: var(--muted); line-height: 1.4; }
+  .segment-size { font-size: 0.62rem; font-family: var(--mono); color: var(--muted); margin-top: 7px; }
+
+  /* White space */
+  .gap-card {
+    border: 1px solid rgba(0,85,255,0.2); background: rgba(0,85,255,0.03);
+    padding: 13px; margin-bottom: 7px;
+  }
+  .gap-label { font-size: 0.62rem; font-family: var(--mono); color: var(--accent2); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
+  .gap-text { font-size: 0.8rem; font-weight: 600; }
+  .gap-meta { font-size: 0.68rem; font-family: var(--mono); color: var(--muted); margin-top: 3px; }
+
+  /* Tags */
+  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag { font-size: 0.62rem; font-family: var(--mono); padding: 3px 7px; background: rgba(10,10,15,0.07); color: var(--ink); }
+
+  /* Loading */
+  .loading { display: flex; align-items: center; gap: 10px; padding: 20px; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── PAYWALL ── */
+  .paywall-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,10,15,0.85);
+    z-index: 500;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .paywall-overlay.show { display: flex; }
+
+  .paywall-card {
+    background: var(--paper);
+    max-width: 480px; width: 90%;
+    padding: 40px;
+    border-top: 4px solid var(--accent);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .paywall-label {
+    font-size: 0.65rem; font-family: var(--mono);
+    color: var(--accent); text-transform: uppercase;
+    letter-spacing: 0.12em; margin-bottom: 12px;
+  }
+
+  .paywall-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.2; margin-bottom: 12px; }
+
+  .paywall-desc { font-size: 0.8rem; font-family: var(--mono); color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+  .paywall-features { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .paywall-feature {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.78rem; padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .paywall-feature:last-child { border-bottom: none; }
+  .feature-icon { color: var(--accent2); font-size: 0.9rem; }
+
+  .paywall-btns { display: flex; gap: 10px; }
+
+  .btn-outline {
+    font-family: var(--sans); font-size: 0.75rem; font-weight: 600;
+    padding: 10px 18px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+
+  .search-result {
+    padding: 11px 13px; border: 1px solid var(--border);
+    margin-bottom: 7px; display: flex; gap: 10px; align-items: baseline;
+  }
+  .sim-score { font-size: 0.72rem; font-family: var(--mono); color: var(--accent); font-weight: 600; flex-shrink: 0; width: 38px; }
+  .result-text { font-size: 0.78rem; line-height: 1.5; }
+
+  .pipeline-flow { display: flex; align-items: center; gap: 10px; padding: 14px; background: rgba(10,10,15,0.04); margin-bottom: 18px; flex-wrap: wrap; }
+  .pipeline-step { font-size: 0.68rem; font-family: var(--mono); font-weight: 600; padding: 4px 10px; border: 1px solid var(--border); background: var(--paper); }
+  .pipeline-arrow { color: var(--muted); font-size: 0.75rem; }
+
+  .error-msg { font-size: 0.75rem; font-family: var(--mono); color: var(--accent); padding: 11px 14px; border: 1px solid rgba(255,77,28,0.3); margin-top: 14px; }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    header, .hero-banner { padding: 14px 20px; }
+    .main-panel { padding: 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .hero-banner { grid-template-columns: 1fr; }
+    .hero-stats { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PAYWALL ── -->
+<div class="paywall-overlay" id="paywall">
+  <div class="paywall-card">
+    <div class="paywall-label">⚡ Demo limit reached</div>
+    <div class="paywall-title">You've used all 5 free analyses</div>
+    <div class="paywall-desc">
+      The full version gives you unlimited analyses, real marketplace API connections,
+      and all 5 platforms with live data.
+    </div>
+    <div class="paywall-features">
+      <div class="paywall-feature"><span class="feature-icon">🔗</span> Real Amazon, eBay, Walmart, Etsy, Shopify APIs</div>
+      <div class="paywall-feature"><span class="feature-icon">♾️</span> Unlimited analyses — no request limits</div>
+      <div class="paywall-feature"><span class="feature-icon">💾</span> Full SQLite database with vector search</div>
+      <div class="paywall-feature"><span class="feature-icon">🤖</span> Claude claude-opus-4-5 — real AI analysis, not demo data</div>
+      <div class="paywall-feature"><span class="feature-icon">📊</span> Export reports + API access</div>
+    </div>
+    <div class="paywall-btns">
+      <button class="btn-cta" onclick="contactUs()">Get Full Access →</button>
+      <button class="btn-outline" onclick="closePaywall()">Continue browsing UI</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo">
+    EcomIQ <span>GLOBAL</span> <em>DEMO</em>
+  </div>
+  <div class="header-right">
+    <div class="demo-counter">
+      <span>Analyses left:</span>
+      <div class="counter-dots" id="counter-dots"></div>
+    </div>
+    <button class="btn-cta" onclick="contactUs()">Get Full Version →</button>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero-banner">
+  <div>
+    <div class="hero-title">Global Marketplace<br><span>Intelligence Platform</span></div>
+    <div class="hero-desc">
+      AI-powered review analysis + demand segmentation<br>
+      for Amazon, eBay, Walmart, Etsy & Shopify sellers
+    </div>
+    <div class="hero-platforms">
+      <span class="platform-badge">Amazon PA-API 5.0</span>
+      <span class="platform-badge">eBay Browse API</span>
+      <span class="platform-badge">Walmart Open API</span>
+      <span class="platform-badge">Etsy Open API v3</span>
+      <span class="platform-badge">Shopify Admin API</span>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value">2</div>
+      <div class="hero-stat-label">AI Agents</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">5</div>
+      <div class="hero-stat-label">Platforms</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">TF-IDF</div>
+      <div class="hero-stat-label">Vector Search</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LAYOUT ── -->
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-section" style="margin-bottom:16px; padding: 0 18px;">
+      <div class="nav-label" style="margin-bottom:7px;">Platform</div>
+      <div class="platform-pills">
+        <button class="platform-pill selected" data-platform="amazon">Amazon</button>
+        <button class="platform-pill" data-platform="ebay">eBay</button>
+        <button class="platform-pill" data-platform="walmart">Walmart</button>
+        <button class="platform-pill" data-platform="etsy">Etsy</button>
+        <button class="platform-pill" data-platform="shopify">Shopify</button>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Agents</div>
+      <div class="nav-item active" onclick="showPanel('reviews', this)">
+        <span>💬</span> Review Analyzer
+      </div>
+      <div class="nav-item" onclick="showPanel('demand', this)">
+        <span>📊</span> Demand Segmentor
+      </div>
+    </div>
+    <div class="nav-section" style="margin-top:6px;">
+      <div class="nav-label">Tools</div>
+      <div class="nav-item" onclick="showPanel('search', this)">
+        <span>🔍</span> Vector Search
+      </div>
+      <div class="nav-item" onclick="showPanel('pipeline', this)">
+        <span>⚡</span> Pipeline Demo
+      </div>
+    </div>
+    <div style="margin-top: auto; padding: 20px 18px; border-top: 1px solid var(--border); margin-top: 40px;">
+      <div style="font-size:0.65rem; font-family: var(--mono); color: var(--muted); line-height: 1.6;">
+        <div style="margin-bottom: 6px; color: var(--ink); font-weight: 600;">⚠️ Demo Mode</div>
+        Results use pre-computed data.<br>
+        Full version uses real Claude AI<br>
+        + live marketplace APIs.
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-panel">
+
+    <!-- REVIEW ANALYZER -->
+    <div class="panel active" id="panel-reviews">
+      <div class="panel-header">
+        <div class="panel-title">Review Analyzer</div>
+        <div class="panel-desc">NLP + TF-IDF → purchase signals</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Product Name</label>
+          <input id="r-product" type="text" placeholder="e.g. Sony WH-1000XM5 Headphones" value="Wireless Headphones Pro X3">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <input id="r-category" type="text" value="electronics">
+        </div>
+        <div class="form-group full">
+          <label>Reviews — paste one per line</label>
+          <textarea id="r-reviews" placeholder="Great sound but battery only lasts 6 hours...">Great sound but battery only lasts 6 hours. Very disappointed with longevity.
+ANC is weak compared to Bose at this price point. Not worth $80.
+Cable broke after 3 weeks. Otherwise excellent sound quality for the money.
+Best headphones under $60. Would love a proper carrying case though.
+Multipoint bluetooth would make this perfect for switching between laptop and phone.</textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="analyzeReviews()">⚡ Analyze Reviews</button>
+      <div id="reviews-result"></div>
+    </div>
+
+    <!-- DEMAND SEGMENTOR -->
+    <div class="panel" id="panel-demand">
+      <div class="panel-header">
+        <div class="panel-title">Demand Segmentor</div>
+        <div class="panel-desc">TF-IDF clustering → segments + white space</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Product Category</label>
+          <input id="d-category" type="text" placeholder="Wireless Headphones" value="Wireless Headphones">
+        </div>
+        <div class="form-group">
+          <label>Price Range</label>
+          <input id="d-price" type="text" value="$30-150">
+        </div>
+        <div class="form-group">
+          <label>Market</label>
+          <select id="d-market">
+            <option value="US">🇺🇸 United States</option>
+            <option value="UK">🇬🇧 United Kingdom</option>
+            <option value="DE">🇩🇪 Germany</option>
+            <option value="JP">🇯🇵 Japan</option>
+            <option value="Global">🌍 Global</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Keywords (comma-separated)</label>
+          <input id="d-keywords" value="wireless, bluetooth, noise cancelling, ANC, over-ear">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="segmentDemand()">⚡ Segment Market</button>
+      <div id="demand-result"></div>
+    </div>
+
+    <!-- VECTOR SEARCH -->
+    <div class="panel" id="panel-search">
+      <div class="panel-header">
+        <div class="panel-title">Vector Search</div>
+        <div class="panel-desc">TF-IDF cosine similarity over stored reviews</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Search Query</label>
+          <input id="s-query" type="text" placeholder="battery drain issue on long trips" value="battery life problem">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="searchReviews()">🔍 Search Reviews</button>
+      <div id="search-result"></div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="panel" id="panel-pipeline">
+      <div class="panel-header">
+        <div class="panel-title">Pipeline Demo</div>
+        <div class="panel-desc">Review Analyzer → Demand Segmentor (connected)</div>
+      </div>
+      <div class="pipeline-flow">
+        <div class="pipeline-step">📥 Reviews In</div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">💬 Review Analyzer</div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">🔗 Signals Passed</div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">📊 Demand Segmentor</div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">✅ Full Report</div>
+      </div>
+      <button class="btn btn-primary" onclick="runPipeline()">⚡ Run Full Pipeline</button>
+      <div id="pipeline-result"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── RATE LIMITING ──────────────────────────────
+const MAX_FREE = 5;
+const STORAGE_KEY = 'ecomiq_demo_uses';
+
+function getUses() {
+  try { return parseInt(localStorage.getItem(STORAGE_KEY) || '0'); }
+  catch { return 0; }
+}
+
+function incrementUses() {
+  try { localStorage.setItem(STORAGE_KEY, String(getUses() + 1)); }
+  catch {}
+}
+
+function canUse() { return getUses() < MAX_FREE; }
+
+function updateCounter() {
+  const used = getUses();
+  const remaining = Math.max(0, MAX_FREE - used);
+  const dots = document.getElementById('counter-dots');
+  dots.innerHTML = Array.from({length: MAX_FREE}, (_, i) =>
+    `<div class="dot ${i < used ? 'used' : 'remaining'}"></div>`
+  ).join('');
+}
+
+function checkLimit() {
+  if (!canUse()) {
+    document.getElementById('paywall').classList.add('show');
+    return false;
+  }
+  return true;
+}
+
+function closePaywall() {
+  document.getElementById('paywall').classList.remove('show');
+}
+
+function contactUs() {
+  alert('Contact: your@email.com\n\nFull version includes:\n• Real Claude AI analysis\n• Live marketplace API connections\n• Unlimited analyses\n• Full source code + deployment');
+}
+
+// ── SESSION WATERMARK ──────────────────────────
+function genSessionId() {
+  const key = 'ecomiq_session';
+  try {
+    let sid = localStorage.getItem(key);
+    if (!sid) {
+      sid = 'demo-' + Math.random().toString(36).slice(2,10).toUpperCase();
+      localStorage.setItem(key, sid);
+    }
+    return sid;
+  } catch {
+    return 'demo-' + Math.random().toString(36).slice(2,10).toUpperCase();
+  }
+}
+
+const SESSION_ID = genSessionId();
+
+// ── PLATFORM ──────────────────────────────────
+let currentPlatform = 'amazon';
+document.querySelectorAll('.platform-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.platform-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    currentPlatform = pill.dataset.platform;
+  });
+});
+
+// ── NAV ───────────────────────────────────────
+function showPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+// ── MOCK DATA ─────────────────────────────────
+function getMockReview(product, platform) {
+  return {
+    demo_session_id: SESSION_ID,
+    demo_mode: true,
+    agent: "review_analyzer",
+    product, platform,
+    reviews_analyzed: 15,
+    vectorized: true,
+    note: "Demo mode — full version uses real Claude AI + live platform APIs",
+    result: {
+      sentiment_score: 3.7,
+      sentiment_label: "mixed",
+      top_complaints: [
+        {issue: "Battery life shorter than advertised (6h vs claimed 30h)", frequency: 31, severity: "high"},
+        {issue: "ANC significantly weaker than competitors at this price", frequency: 24, severity: "high"},
+        {issue: "Charging cable broke within first month", frequency: 18, severity: "high"},
+        {issue: "No carrying case included in the box", frequency: 12, severity: "medium"},
+      ],
+      top_praises: [
+        {feature: "Sound quality-to-price ratio", frequency: 58},
+        {feature: "Comfortable fit for long sessions", frequency: 41},
+        {feature: "Quick pairing and stable connection", frequency: 27},
+      ],
+      purchase_signals: [
+        {signal: "Source headphones with 35h+ real-world battery (800mAh+ cell)", confidence: 0.93, action: "Filter supplier catalogue by battery capacity ≥ 800mAh", priority: "P0"},
+        {signal: "High demand for braided nylon cable — current cable breaks early", confidence: 0.87, action: "Request braided cable upgrade or bundle replacement cable", priority: "P0"},
+        {signal: "Multipoint Bluetooth requested by 38% of reviewers", confidence: 0.74, action: "Add multipoint BT as premium SKU differentiator", priority: "P1"},
+        {signal: "Carrying case absence cited in 12% of negative reviews", confidence: 0.68, action: "Bundle EVA hard case — adds ~$2 COGS, lifts perceived value", priority: "P1"},
+      ],
+      unmet_needs: [
+        "USB-C fast charge (10 min = 3h listening)",
+        "Foldable design with compact travel case",
+        "Transparency mode for street/commute safety",
+        "App-based EQ customisation under $60",
+      ],
+      recommended_actions: [
+        {priority: "P0", action: "Source with 35h+ battery + braided cable from same supplier", roi_estimate: "high"},
+        {priority: "P1", action: "Add EVA hard case to product bundle", roi_estimate: "medium"},
+        {priority: "P2", action: "Test multipoint BT variant as premium SKU at $10 uplift", roi_estimate: "medium"},
+      ],
+    }
+  };
+}
+
+function getMockDemand(category, platform) {
+  return {
+    demo_session_id: SESSION_ID,
+    demo_mode: true,
+    agent: "demand_segmentor",
+    category, platform,
+    keyword_clusters: {
+      "noise cancelling": ["noise cancelling", "ANC", "active noise"],
+      "wireless": ["wireless", "bluetooth", "bt"],
+      "over-ear": ["over-ear", "on-ear", "full-size"],
+    },
+    note: "Demo mode — full version uses real Claude AI + live platform APIs",
+    result: {
+      total_opportunity_score: 8.6,
+      platform_data: {
+        category_trend: "growing +18% YoY",
+        top_keyword_volume: "45,200 searches/mo",
+        avg_rating_gap: 0.4,
+      },
+      segments: [
+        {
+          name: "Remote Workers",
+          size_estimate: "31% of market",
+          avg_price_point: "$80-150",
+          unmet_need: "All-day comfort + strong mic quality + reliable ANC for video calls",
+          opportunity_score: 9.2,
+          top_keywords: ["comfort", "mic quality", "ANC", "video calls", "all-day"],
+          recommended_skus: 2,
+        },
+        {
+          name: "Daily Commuters",
+          size_estimate: "27% of market",
+          avg_price_point: "$50-120",
+          unmet_need: "Foldable design, 40h+ battery, 10-min quick charge, durable cable",
+          opportunity_score: 8.4,
+          top_keywords: ["battery", "foldable", "compact", "travel", "quick charge"],
+          recommended_skus: 3,
+        },
+        {
+          name: "Budget Audiophiles",
+          size_estimate: "24% of market",
+          avg_price_point: "$40-80",
+          unmet_need: "High-fidelity sound under $80 with balanced EQ and app support",
+          opportunity_score: 8.1,
+          top_keywords: ["sound quality", "bass", "audiophile", "EQ", "value"],
+          recommended_skus: 3,
+        },
+        {
+          name: "Fitness & Sport",
+          size_estimate: "18% of market",
+          avg_price_point: "$35-90",
+          unmet_need: "IPX5+ sweat resistance + secure fit + 8h continuous battery",
+          opportunity_score: 7.3,
+          top_keywords: ["workout", "sweat resistant", "IPX5", "secure fit"],
+          recommended_skus: 2,
+        },
+      ],
+      white_space: [
+        {
+          gap: "ANC headphones with built-in real-time translation chip under $120",
+          estimated_demand: "high",
+          competition: "very low",
+          entry_barrier: "medium",
+          action: "Source from manufacturers with AI/translation chip integration (Timekettle OEM)",
+        },
+        {
+          gap: "Office-grade mic quality in consumer headphones at sub-$80 price",
+          estimated_demand: "high",
+          competition: "low",
+          entry_barrier: "low",
+          action: "Specify -42dB sensitivity mic + noise-filtering DSP in supplier brief",
+        },
+      ],
+    }
+  };
+}
+
+function getMockSearch(query) {
+  const reviews = [
+    {id: 1, text: "Battery life is terrible. Barely lasts 4 hours before dying.", similarity: 0.891},
+    {id: 2, text: "Charging takes 3 hours and battery only lasts 6h. Not good.", similarity: 0.847},
+    {id: 3, text: "Would be perfect if battery lasted longer. Everything else is great.", similarity: 0.763},
+    {id: 4, text: "I got 8 hours on my first charge. Better than expected.", similarity: 0.521},
+  ];
+  return {
+    demo_session_id: SESSION_ID,
+    demo_mode: true,
+    query,
+    method: "tfidf_cosine_similarity",
+    note: "Demo uses pre-stored reviews. Full version searches your actual review database.",
+    results: reviews,
+  };
+}
+
+// ── SIMULATED DELAY ────────────────────────────
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── REVIEW ANALYZER ───────────────────────────
+async function analyzeReviews() {
+  if (!checkLimit()) return;
+
+  const product = document.getElementById('r-product').value.trim() || 'Product';
+  const el = document.getElementById('reviews-result');
+
+  el.innerHTML = loadingHTML('Vectorizing reviews with TF-IDF...');
+  await delay(600);
+  el.innerHTML = loadingHTML('Running Review Analyzer agent...');
+  await delay(900);
+
+  incrementUses();
+  updateCounter();
+
+  const res = getMockReview(product, currentPlatform);
+  el.innerHTML = renderReviewResult(res);
+}
+
+function renderReviewResult(res) {
+  const r = res.result;
+  const score = r.sentiment_score;
+  const icon = score >= 4 ? '😊' : score >= 3 ? '😐' : '😞';
+
+  const signals = r.purchase_signals.map(s => `
+    <div class="signal-card">
+      <div class="signal-priority ${s.priority.toLowerCase()}">${s.priority}</div>
+      <div style="flex:1">
+        <div class="signal-text">${s.signal}</div>
+        <div class="signal-action">→ ${s.action}</div>
+        <div class="confidence-bar"><div class="confidence-fill" style="width:${Math.round(s.confidence*100)}%"></div></div>
+      </div>
+    </div>`).join('');
+
+  const complaints = r.top_complaints.map(c => `
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.75rem;">
+      <span>${c.issue}</span>
+      <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);flex-shrink:0;margin-left:12px">${c.frequency}× · ${c.severity}</span>
+    </div>`).join('');
+
+  const unmet = r.unmet_needs.map(n => `<div class="tag">${n}</div>`).join('');
+
+  return `<div class="result-container">
+    <div class="result-header">
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;">${res.product}</div>
+        <div class="result-agent">REVIEW ANALYZER · ${res.platform.toUpperCase()}</div>
+      </div>
+      <div class="result-meta">${res.reviews_analyzed} reviews · vectorized ✓</div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <h4>Sentiment</h4>
+        <div class="sentiment-display">
+          <div class="sentiment-score">${icon} ${score.toFixed(1)}</div>
+          <div class="sentiment-label">${r.sentiment_label}</div>
+        </div>
+      </div>
+      <div class="result-section"><h4>Purchase Signals</h4><div class="signal-list">${signals}</div></div>
+      <div class="result-section"><h4>Top Complaints</h4>${complaints}</div>
+      <div class="result-section"><h4>Unmet Needs</h4><div class="tag-list">${unmet}</div></div>
+    </div>
+    <div class="watermark-bar">
+      <span>⚠️ Demo mode — real version uses Claude AI + live ${res.platform} API</span>
+      <span>session: ${SESSION_ID}</span>
+    </div>
+  </div>`;
+}
+
+// ── DEMAND SEGMENTOR ──────────────────────────
+async function segmentDemand() {
+  if (!checkLimit()) return;
+
+  const category = document.getElementById('d-category').value.trim() || 'Products';
+  const el = document.getElementById('demand-result');
+
+  el.innerHTML = loadingHTML('Clustering keywords with TF-IDF...');
+  await delay(500);
+  el.innerHTML = loadingHTML('Segmenting market...');
+  await delay(1000);
+
+  incrementUses();
+  updateCounter();
+
+  const res = getMockDemand(category, currentPlatform);
+  el.innerHTML = renderDemandResult(res);
+}
+
+function renderDemandResult(res) {
+  const r = res.result;
+  const segs = r.segments.map(s => `
+    <div class="segment-card">
+      <div class="segment-score">${s.opportunity_score.toFixed(1)}</div>
+      <div class="segment-name">${s.name}</div>
+      <div class="segment-need">${s.unmet_need}</div>
+      <div class="segment-size">${s.size_estimate} · ${s.avg_price_point}</div>
+    </div>`).join('');
+
+  const gaps = r.white_space.map(g => `
+    <div class="gap-card">
+      <div class="gap-label">⚡ White Space</div>
+      <div class="gap-text">${g.gap}</div>
+      <div class="gap-meta">Demand: ${g.estimated_demand} · Competition: ${g.competition} · Barrier: ${g.entry_barrier}</div>
+    </div>`).join('');
+
+  const clusters = Object.entries(res.keyword_clusters).slice(0,5).map(([k, v]) =>
+    `<div class="tag">${k} ${v.length > 1 ? `(+${v.length-1})` : ''}</div>`).join('');
+
+  return `<div class="result-container">
+    <div class="result-header">
+      <div>
+        <div style="font-size:0.88rem;font-weight:700;">${res.category}</div>
+        <div class="result-agent">DEMAND SEGMENTOR · ${res.platform.toUpperCase()}</div>
+      </div>
+      <div class="result-meta">Score: ${r.total_opportunity_score}/10 · ${r.platform_data.category_trend}</div>
+    </div>
+    <div class="result-body">
+      <div class="result-section"><h4>Keyword Clusters (TF-IDF)</h4><div class="tag-list">${clusters}</div></div>
+      <div class="result-section"><h4>Market Segments</h4><div class="segment-grid">${segs}</div></div>
+      <div class="result-section"><h4>White Space Opportunities</h4>${gaps}</div>
+    </div>
+    <div class="watermark-bar">
+      <span>⚠️ Demo mode — real version uses Claude AI + live ${res.platform} API</span>
+      <span>session: ${SESSION_ID}</span>
+    </div>
+  </div>`;
+}
+
+// ── VECTOR SEARCH ─────────────────────────────
+async function searchReviews() {
+  if (!checkLimit()) return;
+
+  const query = document.getElementById('s-query').value.trim();
+  const el = document.getElementById('search-result');
+
+  if (!query || query.length < 3) return showError(el, 'Enter at least 3 characters');
+
+  el.innerHTML = loadingHTML('Searching by cosine similarity...');
+  await delay(700);
+
+  incrementUses();
+  updateCounter();
+
+  const res = getMockSearch(query);
+  const items = res.results.map(r => `
+    <div class="search-result">
+      <div class="sim-score">${Math.round(r.similarity*100)}%</div>
+      <div class="result-text">${r.text}</div>
+    </div>`).join('');
+
+  el.innerHTML = `<div class="result-container">
+    <div class="result-header">
+      <div style="font-size:0.82rem;font-weight:600;">"${query}"</div>
+      <div class="result-meta">TF-IDF cosine · ${res.results.length} results</div>
+    </div>
+    <div class="result-body">${items}</div>
+    <div class="watermark-bar">
+      <span>⚠️ Demo uses pre-stored reviews — full version searches your live database</span>
+      <span>session: ${SESSION_ID}</span>
+    </div>
+  </div>`;
+}
+
+// ── PIPELINE ──────────────────────────────────
+async function runPipeline() {
+  if (!checkLimit()) return;
+
+  const el = document.getElementById('pipeline-result');
+
+  el.innerHTML = loadingHTML('Step 1: Running Review Analyzer...');
+  await delay(800);
+  el.innerHTML = loadingHTML('Passing signals to Demand Segmentor...');
+  await delay(500);
+  el.innerHTML = loadingHTML('Step 2: Segmenting market...');
+  await delay(900);
+
+  incrementUses();
+  updateCounter();
+
+  const r1 = getMockReview('Demo: Wireless Headphones', 'amazon');
+  const r2 = getMockDemand('Wireless Headphones', 'amazon');
+
+  const topSignals = r1.result.purchase_signals.slice(0,3);
+  const topSegs = r2.result.segments.slice(0,3);
+
+  el.innerHTML = `<div class="result-container">
+    <div class="result-header">
+      <div style="font-size:0.88rem;font-weight:700;">Full Pipeline Complete</div>
+      <div class="result-agent">REVIEW → DEMAND · CONNECTED</div>
+    </div>
+    <div class="result-body">
+      <div class="result-section">
+        <h4>Step 1 — Review Analyzer</h4>
+        <div style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);margin-bottom:10px;">
+          ${r1.reviews_analyzed} reviews analyzed → ${r1.result.purchase_signals.length} purchase signals extracted
+        </div>
+        <div class="signal-list">
+          ${topSignals.map(s => `
+            <div class="signal-card">
+              <div class="signal-priority ${s.priority.toLowerCase()}">${s.priority}</div>
+              <div><div class="signal-text">${s.signal}</div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="result-section">
+        <h4>Step 2 — Demand Segmentor (signals passed from Step 1)</h4>
+        <div style="font-family:var(--mono);font-size:0.75rem;color:var(--muted);margin-bottom:10px;">
+          ${r2.result.segments.length} segments · ${r2.result.white_space.length} white space gaps · Score: ${r2.result.total_opportunity_score}/10
+        </div>
+        <div class="segment-grid">
+          ${topSegs.map(s => `
+            <div class="segment-card">
+              <div class="segment-score">${s.opportunity_score.toFixed(1)}</div>
+              <div class="segment-name">${s.name}</div>
+              <div class="segment-need">${s.unmet_need}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="watermark-bar">
+      <span>⚠️ Demo mode — full version uses real Claude AI + live APIs</span>
+      <span>session: ${SESSION_ID}</span>
+    </div>
+  </div>`;
+}
+
+// ── HELPERS ───────────────────────────────────
+function loadingHTML(msg) {
+  return `<div class="loading"><div class="spinner"></div>${msg}</div>`;
+}
+function showError(el, msg) {
+  el.innerHTML = `<div class="error-msg">⚠️ ${msg}</div>`;
+}
+
+// ── INIT ──────────────────────────────────────
+updateCounter();
+if (!canUse()) {
+  document.getElementById('paywall').classList.add('show');
+}
+</script>
+</body>
+</html>
